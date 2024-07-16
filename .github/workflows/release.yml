@@ -29,3 +29,4 @@ jobs:
       - run: docker pull ${{ env.CADDY_IMAGE_NAME }}:latest
       - run: docker tag ${{ env.CADDY_IMAGE_NAME }}:latest ${{ env.CADDY_IMAGE_NAME }}:${{ github.ref_name }}
       - run: docker push ${{ env.CADDY_IMAGE_NAME }}:${{ github.ref_name }}
+
