@@ -1,3 +1,6 @@
+{
+auto_https off
+}
 localhost, devops-example.test {
 	# tls internal
 
