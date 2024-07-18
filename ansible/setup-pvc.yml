@@ -1,0 +1,73 @@
+---
+- hosts: PVC
+  become: true
+
+
+  vars:
+    container_count: 4
+    default_container_name: docker
+    default_container_image: ubuntu
+    default_container_command: sleep 1d
+    docker_dir: /etc/docker/
+
+  tasks:
+    - name: Install aptitude
+      apt:
+        name: aptitude
+        state: latest
+        update_cache: true
+
+    - name: Ensure the target directory exists
+      file:
+        path: /etc/docker
+        state: directory
+        mode: '0755'
+
+    - name: Copy the file to the target directory
+      copy:
+        src: files/daemon.json
+        dest: " {{ docker_dir }}/daemon.json"
+        mode: '0644'
+
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: true
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu jammy stable
+        state: present
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+
+    - name: Check Docker is active
+      service:
+        name: docker
+        state: started
+        enabled: yes

@@ -1,5 +1,5 @@
 localhost, devops-example.test {
-	tls internal
+	# tls internal
 
 	handle /images/* {
 		file_server

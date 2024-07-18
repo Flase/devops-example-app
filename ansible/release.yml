@@ -1,17 +1,25 @@
 ---
 
-- hosts: all
+- hosts: PVC
   gather_facts: no
   tasks:
+    - name: Install Python requests module
+      apt:
+          name: python3-requests
+          state: present
 
     - community.docker.docker_network:
         name: devops-example
+        ipam_config:
+          - subnet: 10.0.0.0/24
+            gateway: 10.0.0.1
+            iprange: 10.0.0.0/26
 
     - community.docker.docker_container:
         name: app
         # Обязатлеьно указываем тег, который хотим деплоить
         # Если образа на сервере нет, Ansible его автоматически скачает
-        image: "hexletcomponents/devops-example-app:{{ version }}"
+        image: "dsradozhitskiy/devops-example-app:{{ version }}"
         # Подключаем супервизор
         # Если контейнер остановится, например, из-за ошибок
         # супервизор докера его перезапустить
@@ -28,7 +36,7 @@
 
     - community.docker.docker_container:
         name: caddy
-        image: "hexletcomponents/devops-example-caddy:{{ version }}"
+        image: "dsradozhitskiy/devops-example-caddy:{{ version }}"
         restart_policy: always
         state: started
         networks:
